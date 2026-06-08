@@ -8,6 +8,7 @@ $git_branch\
 $git_commit\
 $git_status\
 $git_state\
+${custom.git_sync}\
 $package\
 $fill\
 $cmake\
@@ -192,41 +193,44 @@ when = "true"
 
 [custom.git_sync]
 ignore_timeout = true
-description = "Shows git sync status based on last server communication."
+description = "Warns that git_status ahead/behind counters are stale for the current branch's upstream."
 command = """
 warn_hours=${GIT_SYNC_WARN_HOURS:-4}
 
-now=${EPOCHSECONDS:-$(date +%s)}
+# No upstream → no sync claim to make. Stay silent.
+upstream=$(git rev-parse --abbrev-ref '@{u}' 2>/dev/null) || exit 0
+branch=${upstream#*/}
 
+now=${EPOCHSECONDS:-$(date +%s)}
 sync_ts=0
 
-# FETCH_HEAD (portable)
+# Source 1: FETCH_HEAD mtime, gated on content referencing the current upstream branch.
+# Catches no-op fetches (ref didn't move, so source 2 missed them) while ignoring
+# fetches of *other* branches that would otherwise falsely freshen the canary.
 fh=$(git rev-parse --git-path FETCH_HEAD 2>/dev/null)
-
-if [[ -f "$fh" ]]; then
-    ts=$(stat -c %Y "$fh" 2>/dev/null || stat -f %m "$fh" 2>/dev/null)
-    [[ -n "$ts" ]] && sync_ts=$ts
+if [[ -f "$fh" ]] && grep -qF "branch '${branch}' of " "$fh"; then
+  ts=$(stat -c %Y "$fh" 2>/dev/null || stat -f %m "$fh" 2>/dev/null)
+  [[ -n "$ts" ]] && sync_ts=$ts
 fi
 
-# Upstream reflog 
-if git rev-parse --abbrev-ref @{u} >/dev/null 2>&1; then 
-  up=$(git rev-parse --abbrev-ref @{u}) 
-  ts=$(git reflog show -1 --format=%at "$up" 2>/dev/null) 
-  [[ -n "$ts" && $ts -gt $sync_ts ]] && sync_ts=$ts 
+# Source 2: reflog file mtime for this branch's remote-tracking ref.
+# Catches ref-moving events: fetch with new commits, accepted push (FF or force).
+# --git-path resolves to the shared logs dir so worktrees behave correctly.
+reflog=$(git rev-parse --git-path "logs/refs/remotes/$upstream" 2>/dev/null)
+if [[ -f "$reflog" ]]; then
+  ts=$(stat -c %Y "$reflog" 2>/dev/null || stat -f %m "$reflog" 2>/dev/null)
+  [[ -n "$ts" && $ts -gt $sync_ts ]] && sync_ts=$ts
 fi
 
-# Warning output
 if (( sync_ts > 0 )); then
-
-    age_h=$(((now - sync_ts)/3600))
-
-    if (( age_h >= 24 )); then
-        printf " \U000f04e7 %dd" $((age_h/24))
-    elif (( age_h >= warn_hours )); then
-        printf " \U000f04e7 %dh" "$age_h"
-    else
-        printf " \U000f04e6 %dh" "$age_h"
-    fi
+  age_h=$(((now - sync_ts)/3600))
+  if (( age_h >= 24 )); then
+    printf " \U000f04e7 %dd" $((age_h/24))
+  elif (( age_h >= warn_hours )); then
+    printf " \U000f04e7 %dh" "$age_h"
+  else
+    printf " \U000f04e6 %dh" "$age_h"
+  fi
 fi
 """
 style = "bold blue"
