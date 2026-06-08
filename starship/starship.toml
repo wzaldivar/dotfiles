@@ -1,0 +1,234 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+format = """
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_commit\
+$git_status\
+$git_state\
+$package\
+$fill\
+$cmake\
+$gradle\
+$java\
+$kotlin\
+$python\
+$conda\
+$rust\
+$nodejs\
+$lua\
+${custom.docker}\
+$cmd_duration\
+\n$character
+"""
+
+command_timeout = 2000
+
+palette = 'catppuccin_mocha'
+
+[palettes.catppuccin_mocha]
+rosewater = "#f5e0dc"
+flamingo = "#f2cdcd"
+pink = "#f5c2e7"
+mauve = "#cba6f7"
+red = "#f38ba8"
+maroon = "#eba0ac"
+peach = "#fab387"
+yellow = "#f9e2af"
+green = "#a6e3a1"
+teal = "#94e2d5"
+sky = "#89dceb"
+sapphire = "#74c7ec"
+blue = "#89b4fa"
+lavender = "#b4befe"
+text = "#cdd6f4"
+subtext1 = "#bac2de"
+subtext0 = "#a6adc8"
+overlay2 = "#9399b2"
+overlay1 = "#7f849c"
+overlay0 = "#6c7086"
+surface2 = "#585b70"
+surface1 = "#45475a"
+surface0 = "#313244"
+base = "#1e1e2e"
+mantle = "#181825"
+crust = "#11111b"
+
+[username]
+show_always = false
+format = "[$user]($style)@"
+
+[hostname]
+ssh_only = true
+format = "[$hostname]($style) "
+
+[character]
+success_symbol = "[\uf118 ](bold green)"
+error_symbol = "[\uee1f ](bold red)"
+
+[directory]
+home_symbol = "\uf015 "
+read_only = " \uf023 "
+truncation_symbol = "\uf4d4 /"
+format = '[$path]($style)[$read_only]($read_only_style)'
+
+#[directory.substitutions]
+#Desktop = "\uf4a9 "
+#Documents = "\uf02d "
+#Downloads = "\uf498 "
+#Music = "\uf025 "
+#Pictures = "\uf03e "
+#Public = "\uf415 "
+#Videos = "\uf03d "
+#Movies = "\uf03d "
+
+[cmd_duration]
+format = "[ \uf252 $duration]($style)"
+
+[kotlin]
+symbol = " \ue81b "
+format = '[$symbol$version]($style)'
+
+[java]
+symbol = " \uef59 "
+format = '[$symbol$version]($style)'
+
+[gradle]
+symbol = " \ue7f2 "
+format = '[$symbol$version]($style)'
+
+[python]
+symbol = " \ue73c "
+format = '[$symbol$version]($style)'
+
+[conda]
+symbol = " \U000f150e "
+format = '[$symbol$environment]($style)'
+ignore_base = false
+
+[nodejs]
+symbol = " \ued0d "
+format = '[$symbol$version]($style)'
+
+[package]
+symbol = " \uf487 "
+format = '[$symbol$version]($style)'
+
+[git_branch]
+symbol = " \uf418 "
+format = '[$symbol$branch]($style)'
+
+[git_commit]
+only_detached = false
+tag_disabled = false
+tag_symbol = " \uf02b "
+format = "[ $hash$tag]($style)"
+
+[git_status]
+conflicted = "$count\ueefd "
+ahead = "$count\uf4f2 "
+behind = "$count\uf4ef "
+diverged = "\uf402 $ahead_count\uf4f2 $behind_count\uf4ef "
+up_to_date = "\U000f0135 "
+untracked = "$count\uf4a5 "
+stashed = "$count\uef53 "
+modified = "$count\uf448 "
+staged = "$count\uf4d0 "
+renamed = "$count\uf4d5 "
+deleted = "$count\uf4d6 "
+typechanged = "$count\uf4d2 "
+format = "[ $all_status$ahead_behind]($style)"
+
+[git_state]
+format = "[ $state: $progress_current/$progress_total]($style)"
+
+[rust]
+symbol = " \uf323 "
+format = '[$symbol$version]($style)'
+
+[cmake]
+symbol = " \ue794 "
+format = '[$symbol$version]($style)'
+
+[lua]
+symbol = " \ue620 "
+format = '[$symbol$version]($style)'
+
+[custom.ssh_agent]
+description = "Shows which SSH agent is active"
+command = """
+if [[ -S \"$BITWARDEN_SSH_AUTH_SOCK\" && \"$SSH_AUTH_SOCK\" == \"$BITWARDEN_SSH_AUTH_SOCK\" ]]; then
+  echo " \U000f0565 "
+elif [[ -n \"$SSH_AGENT_PID\" ]]; then
+  echo " \U000f099e "
+fi
+"""
+when = '[[ -S "$BITWARDEN_SSH_AUTH_SOCK" && "$SSH_AUTH_SOCK" == "$BITWARDEN_SSH_AUTH_SOCK" ]] || [[ -n "$SSH_AGENT_PID" ]]'
+symbol = " \U000f0306 "
+style = "bold blue"
+format = '[$symbol$output]($style)'
+
+[custom.docker]
+ignore_timeout = true
+description = "Shows Docker server status"
+command = """
+ver=$(docker version --format '{{.Server.Version}}' 2>/dev/null)
+
+if [ -n "$ver" ]; then
+  ctx=$(docker context show 2>/dev/null)
+  running=$(docker ps -q 2>/dev/null | wc -l | tr -d ' ')
+  echo " \U000f048b $ver ($running) [$ctx]"
+else
+  echo " \U000f048f "
+fi
+"""
+symbol = " \uf21f "
+style = "bold purple"
+format = '[$symbol$output]($style)'
+when = "true"
+#detect_files = ["docker-compose.yml", "docker-compose.yaml", "Dockerfile"]
+
+[custom.git_sync]
+ignore_timeout = true
+description = "Shows git sync status based on last server communication."
+command = """
+warn_hours=${GIT_SYNC_WARN_HOURS:-4}
+
+now=${EPOCHSECONDS:-$(date +%s)}
+
+sync_ts=0
+
+# FETCH_HEAD (portable)
+fh=$(git rev-parse --git-path FETCH_HEAD 2>/dev/null)
+
+if [[ -f "$fh" ]]; then
+    ts=$(stat -c %Y "$fh" 2>/dev/null || stat -f %m "$fh" 2>/dev/null)
+    [[ -n "$ts" ]] && sync_ts=$ts
+fi
+
+# Upstream reflog 
+if git rev-parse --abbrev-ref @{u} >/dev/null 2>&1; then 
+  up=$(git rev-parse --abbrev-ref @{u}) 
+  ts=$(git reflog show -1 --format=%at "$up" 2>/dev/null) 
+  [[ -n "$ts" && $ts -gt $sync_ts ]] && sync_ts=$ts 
+fi
+
+# Warning output
+if (( sync_ts > 0 )); then
+
+    age_h=$(((now - sync_ts)/3600))
+
+    if (( age_h >= 24 )); then
+        printf " \U000f04e7 %dd" $((age_h/24))
+    elif (( age_h >= warn_hours )); then
+        printf " \U000f04e7 %dh" "$age_h"
+    else
+        printf " \U000f04e6 %dh" "$age_h"
+    fi
+fi
+"""
+style = "bold blue"
+format = '[$output]($style)'
+when = 'git rev-parse --is-inside-work-tree &>/dev/null'

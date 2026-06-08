@@ -1,0 +1,244 @@
+let mapleader = ' '
+
+set showmode
+set showcmd
+
+set number
+set relativenumber
+
+set scrolloff=5
+set colorcolumn=80,100,120
+set cursorline
+
+set ideajoin
+
+set incsearch
+set hlsearch
+set ignorecase
+set smartcase
+
+set notimeout
+noremap Q gq
+noremap U <C-r>
+noremap _ "_
+noremap * "*
+noremap + "+
+
+set matchpairs+=<:>
+
+set easymotion
+set which-key
+set commentary
+set highlightedyank
+set surround
+
+let g:camelcase_motion = 1
+let g:camelcase_motion_verbose = 0
+source ~/.ideavimrc_extra/toggle_camelcase_motion.vim
+
+let g:WhichKeyDesc__ = "<Leader><Leader> EasyMotion prefix"
+
+map <Leader>aa <Action>(ShowIntentionActions)
+map <Leader>ac <Action>(EditorCompleteStatement)
+map <Leader>ad <Action>(EditorDuplicate)
+map <Leader>ag <Action>(Generate)
+map <Leader>as <Action>(SurroundWith)
+
+let g:WhichKeyDesc_a = "<Leader>a actions"
+let g:WhichKeyDesc_aa = "<Leader>aa intentions"
+let g:WhichKeyDesc_ac = "<Leader>ac complete statement"
+let g:WhichKeyDesc_ad = "<Leader>ad duplicate"
+let g:WhichKeyDesc_ag = "<Leader>ag generate"
+let g:WhichKeyDesc_as = "<Leader>as surround with"
+
+map <Leader>ca <Action>(CopyAbsolutePath)
+map <Leader>cn <Action>(CopyFileName)
+map <Leader>cp <Action>(CopyContentRootPath)
+
+let g:WhichKeyDesc_c = "<Leader>c copy"
+let g:WhichKeyDesc_ca = "<Leader>ca absolute path"
+let g:WhichKeyDesc_cn = "<Leader>cn file name"
+let g:WhichKeyDesc_cp = "<Leader>cp content root path"
+
+map <Leader>fd <Action>(NewDir)
+map <Leader>fn <Action>(NewFile)
+map <Leader>fo <Action>(OpenFile)
+map <Leader>fr <Action>(RenameFile)
+map <Leader>fs <Action>(NewScratchFile)
+
+let g:WhichKeyDesc_f = "<Leader>f file"
+let g:WhichKeyDesc_fd = "<Leader>fd new directory"
+let g:WhichKeyDesc_fn = "<Leader>fn new file"
+let g:WhichKeyDesc_fo = "<Leader>fo open"
+let g:WhichKeyDesc_fr = "<Leader>fr rename"
+let g:WhichKeyDesc_fs = "<Leader>fs scratch file"
+
+map <Leader>gd <Action>(GotoDeclaration)
+map <Leader>gy <Action>(GotoTypeDeclaration)
+map <Leader>gi <Action>(GotoImplementation)
+map <Leader>gt <Action>(GotoTest)
+map <Leader>gs <Action>(GotoSuperMethod)
+map <Leader>gl <Action>(GotoLine)
+map <Leader>ge <Action>(GotoNextError)
+map <Leader>gp <Action>(GotoPreviousError)
+map <Leader>gc <Action>(JumpToLastChange)
+map <Leader>go <Action>(RecentLocations)
+map <Leader>gr <Action>(RecentFiles)
+map <Leader>gf <Action>(Forward)
+map <Leader>gb <Action>(Back)
+map <Leader>gk <Action>(MethodUp)
+map <Leader>gj <Action>(MethodDown)
+
+let g:WhichKeyDesc_g = "<Leader>g go to"
+let g:WhichKeyDesc_gd = "<Leader>gd declaration"
+let g:WhichKeyDesc_gy = "<Leader>gy type declaration"
+let g:WhichKeyDesc_gi = "<Leader>gi implementation"
+let g:WhichKeyDesc_gt = "<Leader>gt test"
+let g:WhichKeyDesc_gs = "<Leader>gs super"
+let g:WhichKeyDesc_gl = "<Leader>gl line"
+let g:WhichKeyDesc_ge = "<Leader>ge next error"
+let g:WhichKeyDesc_gp = "<Leader>gp previous error"
+let g:WhichKeyDesc_gc = "<Leader>gc last change"
+let g:WhichKeyDesc_go = "<Leader>go recent locations"
+let g:WhichKeyDesc_gr = "<Leader>gr recent files"
+let g:WhichKeyDesc_gf = "<Leader>gf forward"
+let g:WhichKeyDesc_gb = "<Leader>gb backward"
+let g:WhichKeyDesc_gk = "<Leader>gk method up"
+let g:WhichKeyDesc_gj = "<Leader>gj method down"
+
+map <Leader>ic <Action>(ViewSource)
+map <Leader>ih <Action>(ShowHoverInfo)
+map <Leader>ii <Action>(QuickImplementations)
+map <Leader>io <Action>(FileStructurePopup)
+map <Leader>it <Action>(QuickTypeDefinition)
+
+let g:WhichKeyDesc_i = "<Leader>i inspect"
+let g:WhichKeyDesc_ic = "<Leader>ic source"
+let g:WhichKeyDesc_ih = "<Leader>ih hover info"
+let g:WhichKeyDesc_ii = "<Leader>ii implementations"
+let g:WhichKeyDesc_io = "<Leader>io outline"
+let g:WhichKeyDesc_it = "<Leader>it type definition"
+
+map <Leader>my <Action>(MoveLineDown)
+map <Leader>mu <Action>(MoveLineUp)
+map <Leader>mj <Action>(MoveStatementDown)
+map <Leader>mk <Action>(MoveStatementUp)
+map <Leader>mh <Action>(MoveElementLeft)
+map <Leader>ml <Action>(MoveElementRight)
+
+let g:WhichKeyDesc_m = "<Leader>m move"
+let g:WhichKeyDesc_my = "<Leader>my line down"
+let g:WhichKeyDesc_mu = "<Leader>mu line up"
+let g:WhichKeyDesc_mj = "<Leader>mj statement down"
+let g:WhichKeyDesc_mk = "<Leader>mk statement up"
+let g:WhichKeyDesc_mh = "<Leader>mh element left"
+let g:WhichKeyDesc_ml = "<Leader>ml element right"
+
+map <Leader>oi <Action>(OptimizeImports)
+map <Leader>or <Action>(RearrangeCode)
+map <Leader>of <Action>(ShowReformatFileDialog)
+
+let g:WhichKeyDesc_o = "<Leader>o organize"
+let g:WhichKeyDesc_oi = "<Leader>oi imports"
+let g:WhichKeyDesc_or = "<Leader>or rearrange code"
+let g:WhichKeyDesc_of = "<Leader>of reformat file"
+
+map <Leader>pi <Action>(RestartIde)
+map <Leader>pr <Action>(Run)
+map <Leader>px <Action>(ExternalSystem.RefreshAllProjects)
+
+let g:WhichKeyDesc_p = "<Leader>p project"
+let g:WhichKeyDesc_pi = "<Leader>pi restart IDE"
+let g:WhichKeyDesc_pr = "<Leader>pr run"
+let g:WhichKeyDesc_px = "<Leader>px refresh external projects"
+
+map <Leader>rf <Action>(IntroduceField)
+map <Leader>rm <Action>(ExtractMethod)
+map <Leader>rn <Action>(RenameElement)
+map <Leader>rr <Action>(Refactorings.QuickListPopupAction)
+map <Leader>rs <Action>(ChangeSignature)
+map <Leader>rv <Action>(IntroduceVariable)
+
+let g:WhichKeyDesc_r = "<Leader>r refactor"
+let g:WhichKeyDesc_rf = "<Leader>rf extract field"
+let g:WhichKeyDesc_rm = "<Leader>rm extract method"
+let g:WhichKeyDesc_rn = "<Leader>rn rename"
+let g:WhichKeyDesc_rr = "<Leader>rr refactor menu"
+let g:WhichKeyDesc_rs = "<Leader>rs change signature"
+let g:WhichKeyDesc_rv = "<Leader>rv extract variable"
+
+map <Leader>sa <Action>(GotoAction)
+map <Leader>sc <Action>(GotoClass)
+map <Leader>sf <Action>(GotoFile)
+map <Leader>sl <Action>(Find)
+map <Leader>sL <Action>(FindInPath)
+map <Leader>sr <Action>(Replace)
+map <Leader>sR <Action>(ReplaceInPath)
+map <Leader>ss <Action>(GotoSymbol)
+map <Leader>st <Action>(TextSearchAction)
+map <Leader>su <Action>(FindUsages)
+map <Leader>sU <Action>(ShowUsages)
+map <Leader>sx <Action>(SearchEverywhere)
+
+let g:WhichKeyDesc_s = "<Leader>s search"
+let g:WhichKeyDesc_sa = "<Leader>sa action"
+let g:WhichKeyDesc_sc = "<Leader>sc class"
+let g:WhichKeyDesc_sf = "<Leader>sf file"
+let g:WhichKeyDesc_sl = "<Leader>sl find"
+let g:WhichKeyDesc_sL = "<Leader>sL find in path"
+let g:WhichKeyDesc_sr = "<Leader>sr replace"
+let g:WhichKeyDesc_sR = "<Leader>sR replace in path"
+let g:WhichKeyDesc_ss = "<Leader>ss symbol"
+let g:WhichKeyDesc_st = "<Leader>st text"
+let g:WhichKeyDesc_su = "<Leader>su find usages"
+let g:WhichKeyDesc_sU = "<Leader>sU show usages"
+let g:WhichKeyDesc_sx = "<Leader>sx everywhere"
+
+map <Leader>tc <Action>(EditorToggleCase)
+map <Leader>tf <Action>(ExpandCollapseToggleAction)
+noremap <Leader>th :set hlsearch!<CR>
+noremap <Leader>ti :set ignorecase!<CR>
+noremap <Leader>tm :call ToggleCamelCaseMotion()<CR>
+noremap <Leader>tn :set incsearch!<CR>
+noremap <Leader>tr :set relativenumber!<CR>
+noremap <Leader>ts :let @/=""<CR>:redraw<CR>
+
+let g:WhichKeyDesc_t = "<Leader>t toggle"
+let g:WhichKeyDesc_tc = "<Leader>tc case"
+let g:WhichKeyDesc_tf = "<Leader>tf folding"
+let g:WhichKeyDesc_th = "<Leader>th search highlighting"
+let g:WhichKeyDesc_ti = "<Leader>ti ignore case"
+let g:WhichKeyDesc_tm = "<Leader>tm camel case motion"
+let g:WhichKeyDesc_tn = "<Leader>tn incremental search"
+let g:WhichKeyDesc_tr = "<Leader>tr relative numbers"
+let g:WhichKeyDesc_ts = "<Leader>ts selection"
+
+map <Leader>vc <Action>(IdeaVim.ReloadVimRc.reload)
+noremap <Leader>vo :edit ~/.ideavimrc<CR>
+
+let g:WhichKeyDesc_v = "<Leader>v vim config"
+let g:WhichKeyDesc_vc = "<Leader>vc reload config"
+let g:WhichKeyDesc_vo = "<Leader>vo open config"
+
+map <Leader>wa <Action>(UnsplitAll)
+map <Leader>wc <Action>(SplitHorizontally)
+noremap <Leader>wh <C-w>h
+noremap <Leader>wj <C-w>j
+noremap <Leader>wk <C-w>k
+noremap <Leader>wl <C-w>l
+map <Leader>wq <Action>(CloseAllEditors)
+map <Leader>wv <Action>(SplitVertically)
+map <Leader>ww <Action>(Unsplit)
+map <Leader>wx <Action>(CloseContent)
+
+let g:WhichKeyDesc_w = "<Leader>w window operations"
+let g:WhichKeyDesc_wa = "<Leader>wa close all splits"
+let g:WhichKeyDesc_wc = "<Leader>wc split horizontally"
+let g:WhichKeyDesc_wh = "<Leader>wh move left"
+let g:WhichKeyDesc_wj = "<Leader>wj move down"
+let g:WhichKeyDesc_wk = "<Leader>wk move up"
+let g:WhichKeyDesc_wl = "<Leader>wl move right"
+let g:WhichKeyDesc_wq = "<Leader>wq close all"
+let g:WhichKeyDesc_wv = "<Leader>wv split vertically"
+let g:WhichKeyDesc_ww = "<Leader>ww close split"
+let g:WhichKeyDesc_wx = "<Leader>wx close"

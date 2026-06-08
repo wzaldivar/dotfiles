@@ -1,0 +1,9 @@
+*.local
+*.local.sh
+.gitconfig.personal.local
+*.env
+*.secret
+id_*
+*.pem
+*.key
+.DS_Store
