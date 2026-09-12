@@ -18,7 +18,7 @@ Personal local dev environment configuration — terminal, shell, editors, promp
 | `shell/`     | Zsh aliases + helper functions (`repo`, `mkcd`, `groot`, `init_python`) |
 | `starship/`  | Starship prompt (Catppuccin Mocha + custom Docker / git-sync modules)   |
 | `tmux/`      | Tmux + Catppuccin                                                       |
-| zsh-plugins/ | `zsh-autosuggestions` + `zsh-syntax-highlighting` from `https://github.com/zsh-users` |
+| `zsh-plugins/` | `zsh-autosuggestions` + `zsh-syntax-highlighting` from `https://github.com/zsh-users` |
 
 ## Install
 
