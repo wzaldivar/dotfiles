@@ -7,6 +7,7 @@ Personal local dev environment configuration — terminal, shell, editors, promp
 | Directory    | What it configures                                                      |
 | ------------ | ----------------------------------------------------------------------- |
 | `bitwarden/` | Bitwarden SSH agent socket wiring                                       |
+| `carapace/`  | [`carapace`](https://carapace.sh/) shell completions + [`fzf-tab`](https://github.com/Aloxaf/fzf-tab) completion menu |
 | `colima/`    | Colima / Docker socket env vars                                         |
 | `ghostty/`   | Ghostty terminal (theme, font, padding)                                 |
 | `git/`       | Per-gitdir personal identity via `includeIf`                            |
@@ -95,4 +96,4 @@ Run `help_aliases` after sourcing `shell/.aliases.sh` for the full list. Highlig
 
 Not all modules are useful without their target tool installed:
 
-- [ghostty](https://ghostty.org/) · [starship](https://starship.rs/) · [lsd](https://github.com/lsd-rs/lsd) · [neovim](https://neovim.io/) (LazyVim) · [tmux](https://github.com/tmux/tmux) · [colima](https://github.com/abiosoft/colima) · [mise](https://mise.jdx.dev/) · [ollama](https://ollama.com/) · [Bitwarden Desktop](https://bitwarden.com/help/ssh-agent/)
+- [ghostty](https://ghostty.org/) · [carapace](https://carapace.sh/) · [starship](https://starship.rs/) · [lsd](https://github.com/lsd-rs/lsd) · [neovim](https://neovim.io/) (LazyVim) · [tmux](https://github.com/tmux/tmux) · [colima](https://github.com/abiosoft/colima) · [mise](https://mise.jdx.dev/) · [ollama](https://ollama.com/) · [Bitwarden Desktop](https://bitwarden.com/help/ssh-agent/)
