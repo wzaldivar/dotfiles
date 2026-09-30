@@ -19,7 +19,7 @@ Personal local dev environment configuration — terminal, shell, editors, promp
 | `shell/`     | Zsh aliases + helper functions (`repo`, `mkcd`, `groot`, `lsbranches`)  |
 | `starship/`  | Starship prompt (Catppuccin Mocha + custom Docker / git-sync modules)   |
 | `tmux/`      | Tmux + Catppuccin                                                       |
-| `zsh-plugins/` | `zsh-autosuggestions` + `zsh-syntax-highlighting` from `https://github.com/zsh-users` |
+| `zsh-plugins/` | `zsh-autosuggestions` + `zsh-syntax-highlighting`, from the system package manager if it has them, otherwise cloned from `https://github.com/zsh-users` |
 
 ## Install
 
@@ -49,6 +49,11 @@ are only appended if missing, and third-party repos are only cloned if absent.
 
 Adding a new module means adding its name to `ORDER` in `install.sh`; unknown names
 are rejected rather than silently skipped.
+
+`zsh-plugins` prefers a copy your package manager already maintains, probing
+`/opt/homebrew/share`, `/opt/local/share`, `/usr/local/share` and `/usr/share` before
+falling back to a direct clone into `~/.zsh` — MacPorts, for one, doesn't package
+either plugin. If `~/.zshrc` already sources a plugin from anywhere, it's left alone.
 
 ## Machine-specific overrides (`.local` files)
 

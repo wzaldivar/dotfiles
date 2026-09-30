@@ -1,17 +1,43 @@
 #! /bin/sh
+#
+# zsh-autosuggestions and zsh-syntax-highlighting, preferring a copy the system
+# package manager already maintains. Homebrew packages both; MacPorts packages
+# neither, which is why the direct clone exists as a fallback.
 
 cd "$(dirname "$0")" || exit 1
 
-mkdir -p "$HOME/.zsh"
+# Order matters: zsh-syntax-highlighting has to be sourced last.
+PLUGINS="zsh-autosuggestions zsh-syntax-highlighting"
 
-[ -d "$HOME/.zsh/zsh-autosuggestions" ] ||
-  git clone https://github.com/zsh-users/zsh-autosuggestions.git "$HOME/.zsh/zsh-autosuggestions"
-[ -d "$HOME/.zsh/zsh-syntax-highlighting" ] ||
-  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$HOME/.zsh/zsh-syntax-highlighting"
+# share/ dirs to probe, in preference order: homebrew (arm), homebrew (intel)
+# and macports both under /opt, then the usual Linux locations.
+PREFIXES="/opt/homebrew/share /opt/local/share /usr/local/share /usr/share"
 
-# zsh-syntax-highlighting must stay the last sourced plugin.
-for line in \
-  'source "$HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh"' \
-  'source "$HOME/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"'; do
-  grep -qxF "$line" "$HOME/.zshrc" 2>/dev/null || echo "$line" >>"$HOME/.zshrc"
+# Print the file to source for a plugin, cloning only if nothing packages it.
+resolve() {
+  for prefix in $PREFIXES; do
+    if [ -r "$prefix/$1/$1.zsh" ]; then
+      echo "$prefix/$1/$1.zsh"
+      return 0
+    fi
+  done
+
+  mkdir -p "$HOME/.zsh"
+  if [ ! -d "$HOME/.zsh/$1" ]; then
+    git clone "https://github.com/zsh-users/$1.git" "$HOME/.zsh/$1" >&2 || return 1
+  fi
+  echo "\$HOME/.zsh/$1/$1.zsh"
+}
+
+for plugin in $PLUGINS; do
+  file=$(resolve "$plugin") || continue
+
+  # Match however the existing line is written: quoted, unquoted, any prefix.
+  if grep -q "^source .*$plugin" "$HOME/.zshrc" 2>/dev/null; then
+    echo "$plugin: already sourced, left alone"
+    continue
+  fi
+
+  echo "source \"$file\"" >>"$HOME/.zshrc"
+  echo "$plugin: $file"
 done

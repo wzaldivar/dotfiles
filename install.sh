@@ -41,10 +41,20 @@ sourced_from() {
     done | grep -q hit
 }
 
+# A module declaring PLUGINS= counts as installed once ~/.zshrc sources them,
+# whatever path they come from (homebrew, macports, or its own clone).
+plugins_sourced() {
+  for _p in $(sed -n 's/^PLUGINS="\(.*\)"$/\1/p' "$1/setup.sh" 2>/dev/null); do
+    if grep -q "^source .*$_p" "$HOME/.zshrc" 2>/dev/null; then return 0; fi
+  done
+  return 1
+}
+
 is_installed() {
   _dir="$ROOT/$1"
   if links_into "$_dir"; then return 0; fi
   if sourced_from "$_dir"; then return 0; fi
+  if plugins_sourced "$_dir"; then return 0; fi
   return 1
 }
 
@@ -80,17 +90,19 @@ for m in $ORDER; do
   done
 done
 
-# zsh-syntax-highlighting must be the last thing sourced from ~/.zshrc, but a
-# later install.sh run — or a manual setup.sh — appends after it. Put it back.
-SYNTAX='source "$HOME/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"'
-if [ -f "$HOME/.zshrc" ] && grep -qxF "$SYNTAX" "$HOME/.zshrc" &&
-  [ "$(tail -n 1 "$HOME/.zshrc")" != "$SYNTAX" ]; then
-  _tmp="$HOME/.zshrc.install.$$"
-  {
-    grep -vxF "$SYNTAX" "$HOME/.zshrc" || true
-    printf '%s\n' "$SYNTAX"
-  } >"$_tmp"
-  cat "$_tmp" >"$HOME/.zshrc" # rewrite in place, preserving permissions
-  rm -f "$_tmp"
-  echo "==> moved zsh-syntax-highlighting to the end of ~/.zshrc"
+# zsh-syntax-highlighting must be the last thing sourced from ~/.zshrc, whatever
+# path it comes from; a later install.sh run - or a manual setup.sh - appends
+# after it. Put it back.
+if [ -f "$HOME/.zshrc" ]; then
+  SYNTAX=$(grep '^source .*zsh-syntax-highlighting' "$HOME/.zshrc" | tail -n 1)
+  if [ -n "$SYNTAX" ] && [ "$(tail -n 1 "$HOME/.zshrc")" != "$SYNTAX" ]; then
+    _tmp="$HOME/.zshrc.install.$$"
+    {
+      grep -vxF "$SYNTAX" "$HOME/.zshrc" || true
+      printf '%s\n' "$SYNTAX"
+    } >"$_tmp"
+    cat "$_tmp" >"$HOME/.zshrc" # rewrite in place, preserving permissions
+    rm -f "$_tmp"
+    echo "==> moved zsh-syntax-highlighting to the end of ~/.zshrc"
+  fi
 fi
