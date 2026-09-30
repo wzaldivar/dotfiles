@@ -38,7 +38,9 @@ alias hard='git reset --hard'
 alias commit='git commit'
 alias commitm='git commit -m'
 
-alias zshconf='${EDITOR:-nvim} ~/.zshrc'
+# A function, not an alias: zsh-syntax-highlighting can't statically resolve
+# ${EDITOR:-nvim} to a command and would mark the whole alias as unknown (red).
+zshconf() { ${EDITOR:-nvim} ~/.zshrc; }
 
 alias compose='docker compose'
 alias cup='docker compose up'
@@ -229,7 +231,7 @@ help_aliases() {
   echo -e "\n${BLUE}=== Text Editor & Shell Configuration ===${NC}"
   echo -e "${GREEN}vi${NC}       → nvim (use Neovim instead of vi)"
   echo -e "${GREEN}vim${NC}      → nvim (use Neovim instead of vim)"
-  echo -e "${GREEN}zshconf${NC}  → nvim ~/.zshrc (edit the Zsh configuration file)"
+  echo -e "${GREEN}zshconf${NC}  → \${EDITOR:-nvim} ~/.zshrc (edit the Zsh configuration file)"
 
   echo -e "\n${BLUE}=== Custom Functions ===${NC}"
   echo -e "${YELLOW}repo <name>${NC}                              → Create a new directory, enter it, and initialize a Git repo"
