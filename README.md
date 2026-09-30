@@ -16,7 +16,7 @@ Personal local dev environment configuration — terminal, shell, editors, promp
 | `nvim/`      | Neovim colorscheme plugin                                               |
 | `ollama/`    | Ollama host env var                                                     |
 | `remote/`    | SSH host aliases                                                        |
-| `shell/`     | Zsh aliases + helper functions (`repo`, `mkcd`, `groot`, `init_python`) |
+| `shell/`     | Zsh aliases + helper functions (`repo`, `mkcd`, `groot`, `lsbranches`)  |
 | `starship/`  | Starship prompt (Catppuccin Mocha + custom Docker / git-sync modules)   |
 | `tmux/`      | Tmux + Catppuccin                                                       |
 | `zsh-plugins/` | `zsh-autosuggestions` + `zsh-syntax-highlighting` from `https://github.com/zsh-users` |
@@ -89,6 +89,7 @@ Run `help_aliases` after sourcing `shell/.aliases.sh` for the full list. Highlig
 - `repo <name>` — create directory, `cd`, `git init`
 - `mkcd <name>` — create directory and `cd`
 - `groot` — `cd` to the current git repo root
+- `lsbranches [path]` — list the current branch of every git repo in a directory (defaults to `.`)
 - `initial_git` — `git init` + stage all + commit `initial` (with confirmation)
 - `init_python <version> [venv_path] [file]` — generate a `mise.toml` with a Python toolchain + venv
 

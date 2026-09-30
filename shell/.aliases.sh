@@ -81,6 +81,48 @@ groot() {
   go_dir $(git rev-parse --show-toplevel)
 }
 
+lsbranches() {
+  RED='\033[0;31m'
+  GREEN='\033[0;32m'
+  YELLOW='\033[0;33m'
+  BLUE='\033[0;34m'
+  NC='\033[0m'
+
+  local directory=${1:-.}
+
+  if [[ ! -d "$directory" ]]; then
+    echo "${RED}Error:${NC} '$directory' is not a directory" >&2
+    return 1
+  fi
+
+  local dir toplevel name branch entry
+  local entries=()
+  local width=0
+
+  while IFS= read -r dir; do
+    toplevel=$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null) || continue
+    [[ "$toplevel" == "$(cd "$dir" && pwd -P)" ]] || continue
+
+    name=$(basename "$dir")
+    branch=$(git -C "$dir" symbolic-ref --quiet --short HEAD 2>/dev/null) ||
+      branch="detached@$(git -C "$dir" rev-parse --short HEAD 2>/dev/null)"
+
+    entries+=("$name"$'\t'"$branch")
+    [[ ${#name} -gt $width ]] && width=${#name}
+  done < <(find "$directory" -mindepth 1 -maxdepth 1 -type d | sort)
+
+  if [[ ${#entries[@]} -eq 0 ]]; then
+    echo "${YELLOW}No git repositories found in${NC} $directory"
+    return 0
+  fi
+
+  for entry in "${entries[@]}"; do
+    name=${entry%%$'\t'*}
+    branch=${entry#*$'\t'}
+    printf "${GREEN}%-*s${NC}  ${BLUE}%s${NC}\n" "$width" "$name" "$branch"
+  done
+}
+
 initial_git() {
   RED='\033[0;31m'
   GREEN='\033[0;32m'
@@ -184,6 +226,7 @@ help_aliases() {
   echo -e "${YELLOW}mkcd <name>${NC}                              → Create a new directory and enter it"
   echo -e "${YELLOW}go_dir <path>${NC}                            → Enter a directory and list its contents"
   echo -e "${YELLOW}groot${NC}                                    → Go to current Git repository root directory"
+  echo -e "${YELLOW}lsbranches [path]${NC}                        → List the current branch of every Git repo in a directory"
   echo -e "${YELLOW}initial_git${NC}                              → Initialize Git repo and commit all current files as 'initial'"
   echo -e "${YELLOW}init_python <version> [venv_path] [file]${NC} → Generate mise.toml with Python and venv config"
 
