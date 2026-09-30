@@ -23,12 +23,19 @@ Personal local dev environment configuration — terminal, shell, editors, promp
 
 ## Install
 
-Each module is independent. From inside the module directory, run its `setup.sh`:
+```sh
+./install.sh shell git starship      # install just these
+./install.sh --list                  # available modules, checked if installed here
+```
+
+Modules are independent — install only the ones you want on this machine. `install.sh`
+runs the selected `setup.sh` scripts in an order that keeps `~/.zshrc` valid (notably,
+it keeps the `zsh-syntax-highlighting` source line last, where it has to be).
+
+Each module's `setup.sh` also still works standalone, if you prefer:
 
 ```sh
 cd shell && ./setup.sh
-cd starship && ./setup.sh
-# ...etc
 ```
 
 Most setup scripts:
@@ -37,7 +44,11 @@ Most setup scripts:
 2. Append a `source` line to `~/.zshrc` where applicable.
 3. If a `.local` override file exists in the module directory, symlink it too.
 
-Only install the modules you want — there is no top-level installer.
+Re-running anything is safe: symlinks are replaced in place, `~/.zshrc` source lines
+are only appended if missing, and third-party repos are only cloned if absent.
+
+Adding a new module means adding its name to `ORDER` in `install.sh`; unknown names
+are rejected rather than silently skipped.
 
 ## Machine-specific overrides (`.local` files)
 
