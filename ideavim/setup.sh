@@ -2,7 +2,7 @@
 
 cd "$(dirname "$0")" || exit 1
 
-ln -sfn "$(pwd)/.ideavimrc" ~/.ideavimrc
+ln -sfn "$(pwd)/.ideavimrc" "$HOME/.ideavimrc"
 
-mkdir -p ~/.ideavimrc_extra
-ln -sfn "$(pwd)/extra/toggle_camelcase_motion.vim" ~/.ideavimrc_extra/toggle_camelcase_motion.vim
+mkdir -p "$HOME/.ideavimrc_extra"
+ln -sfn "$(pwd)/extra/toggle_camelcase_motion.vim" "$HOME/.ideavimrc_extra/toggle_camelcase_motion.vim"

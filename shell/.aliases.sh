@@ -18,8 +18,8 @@ fi
 alias ..='cd ..'
 alias ..2='cd ../..'
 alias ..3='cd ../../..'
-alias home='cd ~'
-alias dev='go_dir ~/dev'
+alias home='cd "$HOME"'
+alias dev='go_dir "$HOME/dev"'
 alias rmdirf='rm -rfv'
 
 alias clone='git clone'
@@ -40,7 +40,7 @@ alias commitm='git commit -m'
 
 # A function, not an alias: zsh-syntax-highlighting can't statically resolve
 # ${EDITOR:-nvim} to a command and would mark the whole alias as unknown (red).
-zshconf() { ${EDITOR:-nvim} ~/.zshrc; }
+zshconf() { ${EDITOR:-nvim} "$HOME/.zshrc"; }
 
 alias compose='docker compose'
 alias cup='docker compose up'
@@ -201,8 +201,8 @@ help_aliases() {
   echo -e "${GREEN}..${NC}       → cd .. (move up one directory)"
   echo -e "${GREEN}..2${NC}      → cd ../.. (move up two directories)"
   echo -e "${GREEN}..3${NC}      → cd ../../.. (move up three directories)"
-  echo -e "${GREEN}home${NC}     → cd ~ (go to the home directory)"
-  echo -e "${GREEN}dev${NC}      → go_dir ~/dev (go to dev directory and list contents)"
+  echo -e "${GREEN}home${NC}     → cd \$HOME (go to the home directory)"
+  echo -e "${GREEN}dev${NC}      → go_dir \$HOME/dev (go to dev directory and list contents)"
   echo -e "${GREEN}rmdirf${NC}   → rm -rfv (forcefully remove directories)"
 
   echo -e "\n${BLUE}=== Git Shortcuts ===${NC}"
@@ -231,7 +231,7 @@ help_aliases() {
   echo -e "\n${BLUE}=== Text Editor & Shell Configuration ===${NC}"
   echo -e "${GREEN}vi${NC}       → nvim (use Neovim instead of vi)"
   echo -e "${GREEN}vim${NC}      → nvim (use Neovim instead of vim)"
-  echo -e "${GREEN}zshconf${NC}  → \${EDITOR:-nvim} ~/.zshrc (edit the Zsh configuration file)"
+  echo -e "${GREEN}zshconf${NC}  → \${EDITOR:-nvim} \$HOME/.zshrc (edit the Zsh configuration file)"
 
   echo -e "\n${BLUE}=== Custom Functions ===${NC}"
   echo -e "${YELLOW}repo <name>${NC}                              → Create a new directory, enter it, and initialize a Git repo"

@@ -2,6 +2,6 @@
 
 cd "$(dirname "$0")" || exit 1
 
-mkdir -p ~/.config/lsd
-ln -sfn "$(pwd)/config.yaml" ~/.config/lsd/config.yaml
-ln -sfn "$(pwd)/colors.yaml" ~/.config/lsd/colors.yaml
+mkdir -p "$HOME/.config/lsd"
+ln -sfn "$(pwd)/config.yaml" "$HOME/.config/lsd/config.yaml"
+ln -sfn "$(pwd)/colors.yaml" "$HOME/.config/lsd/colors.yaml"
