@@ -30,13 +30,15 @@ resolve() {
 }
 
 for plugin in $PLUGINS; do
-  file=$(resolve "$plugin") || continue
-
+  # Check this before resolving: otherwise a machine that already sources the
+  # plugin from elsewhere gets a clone it will never use.
   # Match however the existing line is written: quoted, unquoted, any prefix.
   if grep -q "^source .*$plugin" "$HOME/.zshrc" 2>/dev/null; then
     echo "$plugin: already sourced, left alone"
     continue
   fi
+
+  file=$(resolve "$plugin") || continue
 
   echo "source \"$file\"" >>"$HOME/.zshrc"
   echo "$plugin: $file"
