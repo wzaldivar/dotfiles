@@ -1,28 +1,34 @@
-#! /bin/sh
-
 setup_git_personal() {
-  local path="$1"
+  # NB: do not name this `path` — in zsh `path` is tied to $PATH.
+  local gitdir="$1"
   local gitconfig_file="$HOME/.gitconfig"
 
   # Validate input
-  if [[ -z "$path" ]]; then
+  if [[ -z "$gitdir" ]]; then
     echo "Error: Path argument is required"
     return 1
   fi
 
   # Add trailing slash if not present
-  [[ "$path" != */ ]] && path="$path/"
+  [[ "$gitdir" != */ ]] && gitdir="$gitdir/"
+
+  # Don't append a duplicate block if this path is already configured
+  if git config --file "$gitconfig_file" --get-all "includeIf.gitdir:$gitdir.path" 2>/dev/null |
+    grep -qxF '~/.gitconfig.personal'; then
+    echo "Path '$gitdir' is already configured in $gitconfig_file"
+    return 0
+  fi
 
   # Append the includeIf section
   {
     echo ""
-    echo "[includeIf \"gitdir:$path\"]"
+    echo "[includeIf \"gitdir:$gitdir\"]"
     echo "    path = ~/.gitconfig.personal"
   } >>"$gitconfig_file"
 
-  echo "Added includeIf section for path '$path' to $gitconfig_file"
+  echo "Added includeIf section for path '$gitdir' to $gitconfig_file"
 }
 
 setup_git_personal_here() {
-  setup_git_personal $(pwd)
+  setup_git_personal "$(pwd)"
 }

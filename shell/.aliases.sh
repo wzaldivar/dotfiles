@@ -1,15 +1,19 @@
-alias ls=lsd
+if command -v lsd >/dev/null 2>&1; then
+  alias ls=lsd
 
-alias la='lsd -a'
-alias ll='lsd -l'
-alias lla='lsd -la'
-alias lr='lsd -R'
-alias llr='lsd -lR'
-alias lar='lsd -aR'
-alias llar='lsd -laR'
+  alias la='lsd -a'
+  alias ll='lsd -l'
+  alias lla='lsd -la'
+  alias lr='lsd -R'
+  alias llr='lsd -lR'
+  alias lar='lsd -aR'
+  alias llar='lsd -laR'
+fi
 
-alias vi=nvim
-alias vim=nvim
+if command -v nvim >/dev/null 2>&1; then
+  alias vi=nvim
+  alias vim=nvim
+fi
 
 alias ..='cd ..'
 alias ..2='cd ../..'
@@ -34,7 +38,7 @@ alias hard='git reset --hard'
 alias commit='git commit'
 alias commitm='git commit -m'
 
-alias zshconf='nvim ~/.zshrc'
+alias zshconf='${EDITOR:-nvim} ~/.zshrc'
 
 alias compose='docker compose'
 alias cup='docker compose up'
@@ -42,15 +46,14 @@ alias cdown='docker compose down'
 alias clogs='docker compose logs'
 
 repo() {
-  RED='\033[0;31m'
-  NC='\033[0m'
+  local RED='\033[0;31m'
+  local NC='\033[0m'
 
   local directory=${1:-.}
-
-  target="$directory"
+  local target="$directory"
 
   while [[ ! -d "$target" ]]; do
-    target=$(dirname $target)
+    target=$(dirname "$target")
   done
 
   if git -C "$target" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
@@ -66,27 +69,33 @@ mkcd() {
 }
 
 go_dir() {
-  cd "$1" && lla
+  cd "$1" || return 1
+
+  if command -v lsd >/dev/null 2>&1; then
+    lsd -la
+  else
+    ls -la
+  fi
 }
 
 groot() {
-  RED='\033[0;31m'
-  NC='\033[0m'
+  local RED='\033[0;31m'
+  local NC='\033[0m'
 
   if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     echo "${RED}Error:${NC} Not inside a git repository" >&2
     return 1
   fi
 
-  go_dir $(git rev-parse --show-toplevel)
+  go_dir "$(git rev-parse --show-toplevel)"
 }
 
 lsbranches() {
-  RED='\033[0;31m'
-  GREEN='\033[0;32m'
-  YELLOW='\033[0;33m'
-  BLUE='\033[0;34m'
-  NC='\033[0m'
+  local RED='\033[0;31m'
+  local GREEN='\033[0;32m'
+  local YELLOW='\033[0;33m'
+  local BLUE='\033[0;34m'
+  local NC='\033[0m'
 
   local directory=${1:-.}
 
@@ -124,10 +133,11 @@ lsbranches() {
 }
 
 initial_git() {
-  RED='\033[0;31m'
-  GREEN='\033[0;32m'
-  BLUE='\033[0;34m'
-  NC='\033[0m'
+  local RED='\033[0;31m'
+  local GREEN='\033[0;32m'
+  local BLUE='\033[0;34m'
+  local NC='\033[0m'
+  local response
 
   if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     echo "${RED}Error:${NC} Already inside a git repository" >&2
@@ -142,8 +152,8 @@ initial_git() {
   fi
 
   git init
-  stage -A
-  commitm "initial"
+  git add -A
+  git commit -m "initial"
 }
 
 init_python() {
@@ -171,11 +181,11 @@ init_python() {
 }
 
 help_aliases() {
-  RED='\033[0;31m'
-  GREEN='\033[0;32m'
-  YELLOW='\033[0;33m'
-  BLUE='\033[0;34m'
-  NC='\033[0m'
+  local RED='\033[0;31m'
+  local GREEN='\033[0;32m'
+  local YELLOW='\033[0;33m'
+  local BLUE='\033[0;34m'
+  local NC='\033[0m'
 
   echo -e "\n${BLUE}=== File & Directory Management ===${NC}"
   echo -e "${GREEN}ls${NC}       → Uses lsd (modern ls alternative)"
