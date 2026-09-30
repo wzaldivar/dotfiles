@@ -1,5 +1,8 @@
 #! /bin/sh
 
-ln -s $(pwd)/.bitwarden.sh ~/.bitwarden.sh
+cd "$(dirname "$0")" || exit 1
 
-echo 'source "$HOME/.bitwarden.sh"' >>$HOME/.zshrc
+ln -sfn "$(pwd)/.bitwarden.sh" ~/.bitwarden.sh
+
+line='source "$HOME/.bitwarden.sh"'
+grep -qxF "$line" "$HOME/.zshrc" 2>/dev/null || echo "$line" >>"$HOME/.zshrc"

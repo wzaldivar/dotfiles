@@ -1,5 +1,8 @@
 #! /bin/sh
 
-ln -s $(pwd)/.colima.sh ~/.colima.sh
+cd "$(dirname "$0")" || exit 1
 
-echo 'source "$HOME/.colima.sh"' >>$HOME/.zshrc
+ln -sfn "$(pwd)/.colima.sh" ~/.colima.sh
+
+line='source "$HOME/.colima.sh"'
+grep -qxF "$line" "$HOME/.zshrc" 2>/dev/null || echo "$line" >>"$HOME/.zshrc"

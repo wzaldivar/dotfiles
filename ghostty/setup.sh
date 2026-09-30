@@ -1,4 +1,6 @@
 #! /bin/sh
 
+cd "$(dirname "$0")" || exit 1
+
 mkdir -p ~/.config/ghostty
-ln -s $(pwd)/config ~/.config/ghostty/config
+ln -sfn "$(pwd)/config" ~/.config/ghostty/config
