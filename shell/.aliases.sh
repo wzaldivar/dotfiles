@@ -88,27 +88,58 @@ lsbranches() {
   BLUE='\033[0;34m'
   NC='\033[0m'
 
-  local directory=${1:-.}
+  local fetch=0 directory
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --fetch) fetch=1 ;;
+      -*) echo "${RED}Error:${NC} unknown option '$1'" >&2; return 1 ;;
+      *) directory=$1 ;;
+    esac
+    shift
+  done
+  directory=${directory:-.}
 
   if [[ ! -d "$directory" ]]; then
     echo "${RED}Error:${NC} '$directory' is not a directory" >&2
     return 1
   fi
 
-  local dir toplevel name branch entry
+  local dir toplevel name branch upstream track state color entry
   local entries=()
-  local width=0
+  local name_width=0 branch_width=0
 
   while IFS= read -r dir; do
     toplevel=$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null) || continue
     [[ "$toplevel" == "$(cd "$dir" && pwd -P)" ]] || continue
 
     name=$(basename "$dir")
-    branch=$(git -C "$dir" symbolic-ref --quiet --short HEAD 2>/dev/null) ||
+    if [[ $fetch -eq 1 ]]; then
+      git -C "$dir" fetch --quiet --prune 2>/dev/null ||
+        echo "${YELLOW}Warning:${NC} fetch failed for $name" >&2
+    fi
+    if branch=$(git -C "$dir" symbolic-ref --quiet --short HEAD 2>/dev/null); then
+      # Tracking state as git knows it locally (fresh only with --fetch): upstream and ahead/behind/gone.
+      IFS=$'\t' read -r upstream track < <(git -C "$dir" for-each-ref \
+        --format='%(upstream:short)%09%(upstream:track,nobracket)' "refs/heads/$branch")
+      if [[ -z "$upstream" ]]; then
+        state="no upstream"; color=$YELLOW
+      elif [[ -z "$track" ]]; then
+        state="up to date with $upstream"; color=$GREEN
+      elif [[ "$track" == gone ]]; then
+        state="$upstream gone"; color=$RED
+      elif [[ "$track" == *behind* ]]; then
+        state="$track $upstream"; color=$RED
+      else
+        state="$track $upstream"; color=$YELLOW
+      fi
+    else
       branch="detached@$(git -C "$dir" rev-parse --short HEAD 2>/dev/null)"
+      state="detached"; color=$YELLOW
+    fi
 
-    entries+=("$name"$'\t'"$branch")
-    [[ ${#name} -gt $width ]] && width=${#name}
+    entries+=("$name"$'\t'"$branch"$'\t'"$color"$'\t'"$state")
+    [[ ${#name} -gt $name_width ]] && name_width=${#name}
+    [[ ${#branch} -gt $branch_width ]] && branch_width=${#branch}
   done < <(find "$directory" -mindepth 1 -maxdepth 1 -type d | sort)
 
   if [[ ${#entries[@]} -eq 0 ]]; then
@@ -117,12 +148,11 @@ lsbranches() {
   fi
 
   for entry in "${entries[@]}"; do
-    name=${entry%%$'\t'*}
-    branch=${entry#*$'\t'}
-    printf "${GREEN}%-*s${NC}  ${BLUE}%s${NC}\n" "$width" "$name" "$branch"
+    IFS=$'\t' read -r name branch color state <<< "$entry"
+    printf "${GREEN}%-*s${NC}  ${BLUE}%-*s${NC}  ${color}%s${NC}\n" \
+      "$name_width" "$name" "$branch_width" "$branch" "$state"
   done
 }
-
 initial_git() {
   RED='\033[0;31m'
   GREEN='\033[0;32m'
@@ -226,7 +256,7 @@ help_aliases() {
   echo -e "${YELLOW}mkcd <name>${NC}                              → Create a new directory and enter it"
   echo -e "${YELLOW}go_dir <path>${NC}                            → Enter a directory and list its contents"
   echo -e "${YELLOW}groot${NC}                                    → Go to current Git repository root directory"
-  echo -e "${YELLOW}lsbranches [path]${NC}                        → List the current branch of every Git repo in a directory"
+  echo -e "${YELLOW}lsbranches [--fetch] [path]${NC}              → List the current branch and origin status of every Git repo in a directory"
   echo -e "${YELLOW}initial_git${NC}                              → Initialize Git repo and commit all current files as 'initial'"
   echo -e "${YELLOW}init_python <version> [venv_path] [file]${NC} → Generate mise.toml with Python and venv config"
 
