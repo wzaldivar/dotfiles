@@ -1,21 +1,25 @@
-alias ls=lsd
+if command -v lsd >/dev/null 2>&1; then
+  alias ls=lsd
 
-alias la='lsd -a'
-alias ll='lsd -l'
-alias lla='lsd -la'
-alias lr='lsd -R'
-alias llr='lsd -lR'
-alias lar='lsd -aR'
-alias llar='lsd -laR'
+  alias la='lsd -a'
+  alias ll='lsd -l'
+  alias lla='lsd -la'
+  alias lr='lsd -R'
+  alias llr='lsd -lR'
+  alias lar='lsd -aR'
+  alias llar='lsd -laR'
+fi
 
-alias vi=nvim
-alias vim=nvim
+if command -v nvim >/dev/null 2>&1; then
+  alias vi=nvim
+  alias vim=nvim
+fi
 
 alias ..='cd ..'
 alias ..2='cd ../..'
 alias ..3='cd ../../..'
-alias home='cd ~'
-alias dev='go_dir ~/dev'
+alias home='cd "$HOME"'
+alias dev='go_dir "$HOME/dev"'
 alias rmdirf='rm -rfv'
 
 alias clone='git clone'
@@ -34,7 +38,9 @@ alias hard='git reset --hard'
 alias commit='git commit'
 alias commitm='git commit -m'
 
-alias zshconf='nvim ~/.zshrc'
+# A function, not an alias: zsh-syntax-highlighting can't statically resolve
+# ${EDITOR:-nvim} to a command and would mark the whole alias as unknown (red).
+zshconf() { ${EDITOR:-nvim} "$HOME/.zshrc"; }
 
 alias compose='docker compose'
 alias cup='docker compose up'
@@ -42,15 +48,14 @@ alias cdown='docker compose down'
 alias clogs='docker compose logs'
 
 repo() {
-  RED='\033[0;31m'
-  NC='\033[0m'
+  local RED='\033[0;31m'
+  local NC='\033[0m'
 
   local directory=${1:-.}
-
-  target="$directory"
+  local target="$directory"
 
   while [[ ! -d "$target" ]]; do
-    target=$(dirname $target)
+    target=$(dirname "$target")
   done
 
   if git -C "$target" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
@@ -66,27 +71,33 @@ mkcd() {
 }
 
 go_dir() {
-  cd "$1" && lla
+  cd "$1" || return 1
+
+  if command -v lsd >/dev/null 2>&1; then
+    lsd -la
+  else
+    ls -la
+  fi
 }
 
 groot() {
-  RED='\033[0;31m'
-  NC='\033[0m'
+  local RED='\033[0;31m'
+  local NC='\033[0m'
 
   if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     echo "${RED}Error:${NC} Not inside a git repository" >&2
     return 1
   fi
 
-  go_dir $(git rev-parse --show-toplevel)
+  go_dir "$(git rev-parse --show-toplevel)"
 }
 
 lsbranches() {
-  RED='\033[0;31m'
-  GREEN='\033[0;32m'
-  YELLOW='\033[0;33m'
-  BLUE='\033[0;34m'
-  NC='\033[0m'
+  local RED='\033[0;31m'
+  local GREEN='\033[0;32m'
+  local YELLOW='\033[0;33m'
+  local BLUE='\033[0;34m'
+  local NC='\033[0m'
 
   local fetch=0 directory
   while [[ $# -gt 0 ]]; do
@@ -154,10 +165,11 @@ lsbranches() {
   done
 }
 initial_git() {
-  RED='\033[0;31m'
-  GREEN='\033[0;32m'
-  BLUE='\033[0;34m'
-  NC='\033[0m'
+  local RED='\033[0;31m'
+  local GREEN='\033[0;32m'
+  local BLUE='\033[0;34m'
+  local NC='\033[0m'
+  local response
 
   if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     echo "${RED}Error:${NC} Already inside a git repository" >&2
@@ -172,8 +184,8 @@ initial_git() {
   fi
 
   git init
-  stage -A
-  commitm "initial"
+  git add -A
+  git commit -m "initial"
 }
 
 init_python() {
@@ -201,11 +213,11 @@ init_python() {
 }
 
 help_aliases() {
-  RED='\033[0;31m'
-  GREEN='\033[0;32m'
-  YELLOW='\033[0;33m'
-  BLUE='\033[0;34m'
-  NC='\033[0m'
+  local RED='\033[0;31m'
+  local GREEN='\033[0;32m'
+  local YELLOW='\033[0;33m'
+  local BLUE='\033[0;34m'
+  local NC='\033[0m'
 
   echo -e "\n${BLUE}=== File & Directory Management ===${NC}"
   echo -e "${GREEN}ls${NC}       → Uses lsd (modern ls alternative)"
@@ -219,8 +231,8 @@ help_aliases() {
   echo -e "${GREEN}..${NC}       → cd .. (move up one directory)"
   echo -e "${GREEN}..2${NC}      → cd ../.. (move up two directories)"
   echo -e "${GREEN}..3${NC}      → cd ../../.. (move up three directories)"
-  echo -e "${GREEN}home${NC}     → cd ~ (go to the home directory)"
-  echo -e "${GREEN}dev${NC}      → go_dir ~/dev (go to dev directory and list contents)"
+  echo -e "${GREEN}home${NC}     → cd \$HOME (go to the home directory)"
+  echo -e "${GREEN}dev${NC}      → go_dir \$HOME/dev (go to dev directory and list contents)"
   echo -e "${GREEN}rmdirf${NC}   → rm -rfv (forcefully remove directories)"
 
   echo -e "\n${BLUE}=== Git Shortcuts ===${NC}"
@@ -249,7 +261,7 @@ help_aliases() {
   echo -e "\n${BLUE}=== Text Editor & Shell Configuration ===${NC}"
   echo -e "${GREEN}vi${NC}       → nvim (use Neovim instead of vi)"
   echo -e "${GREEN}vim${NC}      → nvim (use Neovim instead of vim)"
-  echo -e "${GREEN}zshconf${NC}  → nvim ~/.zshrc (edit the Zsh configuration file)"
+  echo -e "${GREEN}zshconf${NC}  → \${EDITOR:-nvim} \$HOME/.zshrc (edit the Zsh configuration file)"
 
   echo -e "\n${BLUE}=== Custom Functions ===${NC}"
   echo -e "${YELLOW}repo <name>${NC}                              → Create a new directory, enter it, and initialize a Git repo"

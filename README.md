@@ -19,16 +19,24 @@ Personal local dev environment configuration — terminal, shell, editors, promp
 | `shell/`     | Zsh aliases + helper functions (`repo`, `mkcd`, `groot`, `lsbranches`)  |
 | `starship/`  | Starship prompt (Catppuccin Mocha + custom Docker / git-sync modules)   |
 | `tmux/`      | Tmux + Catppuccin                                                       |
-| `zsh-plugins/` | `zsh-autosuggestions` + `zsh-syntax-highlighting` from `https://github.com/zsh-users` |
+| `zsh-plugins/` | `zsh-autosuggestions` + `zsh-syntax-highlighting`, from the system package manager if it has them, otherwise cloned from `https://github.com/zsh-users` |
 
 ## Install
 
-Each module is independent. From inside the module directory, run its `setup.sh`:
+```sh
+./install.sh shell git starship      # install just these
+./install.sh --list                  # available modules, checked if installed here
+```
+
+Modules are independent — install only the ones you want on this machine. `install.sh`
+runs the selected `setup.sh` scripts in an order that keeps `~/.zshrc` valid (notably,
+it keeps the `zsh-plugins` source lines together at the end, `zsh-syntax-highlighting`
+last, where it has to be).
+
+Each module's `setup.sh` also still works standalone, if you prefer:
 
 ```sh
 cd shell && ./setup.sh
-cd starship && ./setup.sh
-# ...etc
 ```
 
 Most setup scripts:
@@ -37,7 +45,16 @@ Most setup scripts:
 2. Append a `source` line to `~/.zshrc` where applicable.
 3. If a `.local` override file exists in the module directory, symlink it too.
 
-Only install the modules you want — there is no top-level installer.
+Re-running anything is safe: symlinks are replaced in place, `~/.zshrc` source lines
+are only appended if missing, and third-party repos are only cloned if absent.
+
+Adding a new module means adding its name to `ORDER` in `install.sh`; unknown names
+are rejected rather than silently skipped.
+
+`zsh-plugins` prefers a copy your package manager already maintains, probing
+`/opt/homebrew/share`, `/opt/local/share`, `/usr/local/share` and `/usr/share` before
+falling back to a direct clone into `~/.zsh` — MacPorts, for one, doesn't package
+either plugin. If `~/.zshrc` already sources a plugin from anywhere, it's left alone.
 
 ## Machine-specific overrides (`.local` files)
 
@@ -89,7 +106,7 @@ Run `help_aliases` after sourcing `shell/.aliases.sh` for the full list. Highlig
 - `repo <name>` — create directory, `cd`, `git init`
 - `mkcd <name>` — create directory and `cd`
 - `groot` — `cd` to the current git repo root
-- `lsbranches [path]` — list the current branch of every git repo in a directory (defaults to `.`)
+- `lsbranches [--fetch] [path]` — list the current branch of every git repo in a directory (defaults to `.`) with its status against the upstream (up to date, ahead/behind, gone, no upstream); `--fetch` runs `git fetch --prune` in each repo first so the status is current
 - `initial_git` — `git init` + stage all + commit `initial` (with confirmation)
 - `init_python <version> [venv_path] [file]` — generate a `mise.toml` with a Python toolchain + venv
 
