@@ -30,7 +30,8 @@ Personal local dev environment configuration — terminal, shell, editors, promp
 
 Modules are independent — install only the ones you want on this machine. `install.sh`
 runs the selected `setup.sh` scripts in an order that keeps `~/.zshrc` valid (notably,
-it keeps the `zsh-syntax-highlighting` source line last, where it has to be).
+it keeps the `zsh-plugins` source lines together at the end, `zsh-syntax-highlighting`
+last, where it has to be).
 
 Each module's `setup.sh` also still works standalone, if you prefer:
 

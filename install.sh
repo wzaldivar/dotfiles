@@ -13,8 +13,9 @@ set -e
 cd "$(dirname "$0")" || exit 1
 ROOT=$(pwd)
 
-# zsh-plugins stays last: zsh-syntax-highlighting must be the final thing
-# sourced from ~/.zshrc. carapace (compinit + fzf-tab) goes just before it.
+# zsh-plugins stays last: its source lines go at the end of ~/.zshrc, with
+# zsh-syntax-highlighting the final one. carapace (compinit + fzf-tab) goes just
+# before it.
 # Everything else is order-insensitive.
 ORDER="shell git colima ollama remote bitwarden lsd starship ghostty nvim ideavim tmux carapace zsh-plugins"
 
@@ -90,19 +91,25 @@ for m in $ORDER; do
   done
 done
 
-# zsh-syntax-highlighting must be the last thing sourced from ~/.zshrc, whatever
-# path it comes from; a later install.sh run - or a manual setup.sh - appends
-# after it. Put it back.
+# The zsh plugin source lines stay together at the very end of ~/.zshrc, in
+# the order zsh-plugins/setup.sh declares them (syntax-highlighting last, as it
+# must be). A later install.sh run - or a manual setup.sh - appends after them.
+# Put the block back.
 if [ -f "$HOME/.zshrc" ]; then
-  SYNTAX=$(grep '^source .*zsh-syntax-highlighting' "$HOME/.zshrc" | tail -n 1)
-  if [ -n "$SYNTAX" ] && [ "$(tail -n 1 "$HOME/.zshrc")" != "$SYNTAX" ]; then
-    _tmp="$HOME/.zshrc.install.$$"
-    {
-      grep -vxF "$SYNTAX" "$HOME/.zshrc" || true
-      printf '%s\n' "$SYNTAX"
-    } >"$_tmp"
-    cat "$_tmp" >"$HOME/.zshrc" # rewrite in place, preserving permissions
-    rm -f "$_tmp"
-    echo "==> moved zsh-syntax-highlighting to the end of ~/.zshrc"
+  BLOCK=$(for p in $(sed -n 's/^PLUGINS="\(.*\)"$/\1/p' "$ROOT/zsh-plugins/setup.sh"); do
+    grep "^source .*$p" "$HOME/.zshrc" | tail -n 1
+  done)
+  if [ -n "$BLOCK" ]; then
+    n=$(printf '%s\n' "$BLOCK" | wc -l | tr -d ' ')
+    if [ "$(tail -n "$n" "$HOME/.zshrc")" != "$BLOCK" ]; then
+      _tmp="$HOME/.zshrc.install.$$"
+      {
+        grep -vxF "$BLOCK" "$HOME/.zshrc" || true
+        printf '%s\n' "$BLOCK"
+      } >"$_tmp"
+      cat "$_tmp" >"$HOME/.zshrc" # rewrite in place, preserving permissions
+      rm -f "$_tmp"
+      echo "==> moved the zsh plugin block to the end of ~/.zshrc"
+    fi
   fi
 fi
