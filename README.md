@@ -106,7 +106,7 @@ Run `help_aliases` after sourcing `shell/.aliases.sh` for the full list. Highlig
 - `repo <name>` — create directory, `cd`, `git init`
 - `mkcd <name>` — create directory and `cd`
 - `groot` — `cd` to the current git repo root
-- `lsbranches [path]` — list the current branch of every git repo in a directory (defaults to `.`)
+- `lsbranches [--fetch] [path]` — list the current branch of every git repo in a directory (defaults to `.`) with its status against the upstream (up to date, ahead/behind, gone, no upstream); `--fetch` runs `git fetch --prune` in each repo first so the status is current
 - `initial_git` — `git init` + stage all + commit `initial` (with confirmation)
 - `init_python <version> [venv_path] [file]` — generate a `mise.toml` with a Python toolchain + venv
 
