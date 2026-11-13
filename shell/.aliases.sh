@@ -164,6 +164,7 @@ lsbranches() {
       "$name_width" "$name" "$branch_width" "$branch" "$state"
   done
 }
+
 initial_git() {
   local RED='\033[0;31m'
   local GREEN='\033[0;32m'
